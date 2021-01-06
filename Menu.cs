@@ -18,17 +18,20 @@ namespace Wallet
         }
 
         public void Show()
-        {
-            Console.WriteLine("1. Wprowadź zakup");
-            Console.WriteLine("2. Pokaż listę zakupów");
-            Console.WriteLine("3. Pokaż listę kategorii");
-            Console.WriteLine("4. Zakończ");
+        {          
+            string a = "[1] Wprowadź zakup";
+            string b = "[2] Lista zakupów";
+            string c = "[3] Lista kategorii";
+            string d = "[4] Podsumowanie";
+            string e = "[5] Zakończ";
+
+            Console.WriteLine($"{a, -20} {b, -20} {c, -20} {d, -20} {e, -20}");
 
             byte number;
             do
             {
-                Console.Write("Twój wybór >>> ");
-            } while (!Byte.TryParse(Console.ReadLine(), out number) && number < 5 && number > 0);
+                Console.Write(">>> ");
+            } while (!Byte.TryParse(Console.ReadLine(), out number) && number < 6 && number > 0);
 
             switch (number)
             {
@@ -42,6 +45,9 @@ namespace Wallet
                     this.ShowCategories();
                     break;
                 case 4:
+                    this.ShowSummary();
+                    break;
+                case 5:
                     Environment.Exit(0);
                     break;
             }
@@ -90,6 +96,17 @@ namespace Wallet
             {
                 Console.WriteLine(category);
             }
+        }
+
+        public void ShowSummary()
+        {
+            decimal sum = 0;
+            var purchaces = _manager.GetPurchaces();
+            foreach(var purchace in purchaces)
+            {
+                sum += purchace.Amount;
+            }
+            Console.WriteLine($"Suma: {sum,10} zł");
         }
     }
 }

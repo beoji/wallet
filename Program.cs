@@ -8,7 +8,9 @@ namespace Wallet
         static void Main(string[] args)
         {
             IMenu menu = new Menu(new Manager(@"purchace.csv"));
-            do menu.Show(); while(true);
+            do 
+                menu.Show(); 
+            while(true);
         }
     }
 }
