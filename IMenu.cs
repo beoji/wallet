@@ -6,5 +6,6 @@ namespace Wallet
         void AddPurchace();
         void ShowPurchaces();
         void ShowCategories();
+        void ShowSummary();
     }
 }

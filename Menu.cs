@@ -100,13 +100,75 @@ namespace Wallet
 
         public void ShowSummary()
         {
+            string a = "[1] Miesięczne";
+            string b = "[2] Całkowite";
+            string c = "[3] Powrót";
+
+            Console.WriteLine($"{a, -20} {b, -20} {c, -20}");
+
+            byte number;
+            do
+            {
+                Console.Write(">>> ");
+            } while (!Byte.TryParse(Console.ReadLine(), out number) && number < 4 && number > 0);
+
+            switch (number)
+            {
+                case 1:
+                    do
+                    {
+                        Console.Write("[1-12] >>> ");
+                    } while (!Byte.TryParse(Console.ReadLine(), out number) && number < 13 && number > 0);
+                    this.ShowTotalSummary(number);
+                    break;
+                case 2:
+                    this.ShowTotalSummary();
+                    break;
+                case 3:
+                    this.Show();
+                    break;
+            }
+        }
+
+        public void ShowTotalSummary(int month = 0)
+        {
             decimal sum = 0;
             var purchaces = _manager.GetPurchaces();
-            foreach(var purchace in purchaces)
+            var categories = _manager.GetCategories();
+            
+            var categorySum = new Dictionary<string,decimal>();
+
+            if (month != 0)
             {
-                sum += purchace.Amount;
+                foreach(var category in categories)
+                {
+                    decimal s = 0;
+                    s = purchaces
+                        .Where(c => c.Category == category)
+                        .Where(d => d.Date.Month == month)
+                        .Select(p => p.Amount)
+                        .Sum();
+                    sum += s;
+                    Console.WriteLine($"Kategoria: {category.Name,-20} Suma: {s,10} zł");
+                    categorySum.Add(category.Name, s);
+                }
             }
-            Console.WriteLine($"Suma: {sum,10} zł");
+            else
+            {
+                foreach(var category in categories)
+                {
+                    decimal s = 0;
+                    s = purchaces
+                        .Where(c => c.Category == category)
+                        .Select(p => p.Amount)
+                        .Sum();
+                    sum += s;
+                    categorySum.Add(category.Name, s);
+
+                    Console.WriteLine($"Kategoria: {category.Name,-20} Suma: {s,10} zł");
+                }
+            }
+            Console.WriteLine($"Suma całkowita: {sum,10} zł");
         }
     }
 }
