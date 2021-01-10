@@ -3,7 +3,10 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using System.Globalization;
-
+using System.Text;
+using System.Text.Json;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Wallet
 {

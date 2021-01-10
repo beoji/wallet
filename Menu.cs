@@ -119,7 +119,7 @@ namespace Wallet
                     {
                         Console.Write("[1-12] >>> ");
                     } while (!Byte.TryParse(Console.ReadLine(), out number) && number < 13 && number > 0);
-                    this.ShowTotalSummary(number);
+                    this.ShowMonthlySummary(number);
                     break;
                 case 2:
                     this.ShowTotalSummary();
@@ -130,45 +130,43 @@ namespace Wallet
             }
         }
 
-        public void ShowTotalSummary(int month = 0)
+        public void ShowMonthlySummary(int month)
         {
-            decimal sum = 0;
             var purchaces = _manager.GetPurchaces();
-            var categories = _manager.GetCategories();
-            
-            var categorySum = new Dictionary<string,decimal>();
-
-            if (month != 0)
+            var grouped = purchaces.GroupBy(c => c.Category);
+            foreach(var purchace in grouped)
             {
-                foreach(var category in categories)
-                {
-                    decimal s = 0;
-                    s = purchaces
-                        .Where(c => c.Category == category)
-                        .Where(d => d.Date.Month == month)
-                        .Select(p => p.Amount)
-                        .Sum();
-                    sum += s;
-                    Console.WriteLine($"Kategoria: {category.Name,-20} Suma: {s,10} zł");
-                    categorySum.Add(category.Name, s);
-                }
-            }
-            else
-            {
-                foreach(var category in categories)
-                {
-                    decimal s = 0;
-                    s = purchaces
-                        .Where(c => c.Category == category)
-                        .Select(p => p.Amount)
-                        .Sum();
-                    sum += s;
-                    categorySum.Add(category.Name, s);
+                var s = purchace
+                    .Where(d => d.Date.Month == month)
+                    .Select(p => p.Amount)
+                    .Sum();
+                var name = purchace.First().Category.Name;
 
-                    Console.WriteLine($"Kategoria: {category.Name,-20} Suma: {s,10} zł");
-                }
+                Console.WriteLine($"Kategoria: {name,-20} Suma: {s,10} zł");
             }
-            Console.WriteLine($"Suma całkowita: {sum,10} zł");
+
+            var sum = purchaces
+                .Where(d => d.Date.Month == month)
+                .Select(p => p.Amount)
+                .Sum();
+            Console.WriteLine($"Suma: {sum,42} zł");
+        }
+
+        public void ShowTotalSummary()
+        {
+            var purchaces = _manager.GetPurchaces();
+            var grouped = purchaces.GroupBy(c => c.Category);
+
+            foreach(var purchace in grouped)
+            {
+                var s = purchace.Select(p => p.Amount).Sum();
+                var name = purchace.First().Category.Name;
+
+                Console.WriteLine($"Kategoria: {name,-20} Suma: {s,10} zł");
+            }
+
+            var sum = purchaces.Select(p => p.Amount).Sum();
+            Console.WriteLine($"Suma: {sum,42} zł");
         }
     }
 }
