@@ -134,22 +134,30 @@ namespace Wallet
         {
             var purchaces = _manager.GetPurchaces();
             var grouped = purchaces.GroupBy(c => c.Category);
+
+            Console.WriteLine(new String('-', 54));
+            Console.WriteLine(String.Format("{0,-40} {1,13}", "Kategoria", "Suma"));
+            Console.WriteLine(new String('-', 54));
+
             foreach(var purchace in grouped)
             {
                 var s = purchace
                     .Where(d => d.Date.Month == month)
                     .Select(p => p.Amount)
                     .Sum();
-                var name = purchace.First().Category.Name;
+                var name = purchace.Key;
 
-                Console.WriteLine($"Kategoria: {name,-20} Suma: {s,10} zł");
+                Console.WriteLine($"{name,-40} {s,10} zł");
             }
 
             var sum = purchaces
                 .Where(d => d.Date.Month == month)
                 .Select(p => p.Amount)
                 .Sum();
-            Console.WriteLine($"Suma: {sum,42} zł");
+
+            Console.WriteLine(String.Format("{0,40} {1,10} zł", "Razem:", sum));
+            Console.WriteLine(new String('-', 54));
+
         }
 
         public void ShowTotalSummary()
@@ -157,16 +165,22 @@ namespace Wallet
             var purchaces = _manager.GetPurchaces();
             var grouped = purchaces.GroupBy(c => c.Category);
 
+            Console.WriteLine(new String('-', 54));
+            Console.WriteLine(String.Format("{0,-40} {1,13}", "Kategoria", "Suma"));
+            Console.WriteLine(new String('-', 54));
+
             foreach(var purchace in grouped)
             {
                 var s = purchace.Select(p => p.Amount).Sum();
-                var name = purchace.First().Category.Name;
+                var name = purchace.Key;
 
-                Console.WriteLine($"Kategoria: {name,-20} Suma: {s,10} zł");
+                Console.WriteLine($"{name,-40} {s,10} zł");
             }
 
             var sum = purchaces.Select(p => p.Amount).Sum();
-            Console.WriteLine($"Suma: {sum,42} zł");
+
+            Console.WriteLine(String.Format("{0,40} {1,10} zł", "Razem:", sum));
+            Console.WriteLine(new String('-', 54));
         }
     }
 }
