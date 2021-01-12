@@ -27,8 +27,8 @@ namespace Wallet
 
             if(!exists)
             {
-                Console.WriteLine("Data file does not exist. Program will shut down.");
-                Environment.Exit(0);
+                var fs = File.Create(purchacePath);
+                fs.Close();
             }
             else
             {
