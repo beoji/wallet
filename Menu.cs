@@ -82,20 +82,18 @@ namespace Wallet
 
         public void ShowPurchaces()
         {
-            var purchaces = _manager.GetPurchaces();
-            foreach(var purchace in purchaces)
-            {
-                Console.WriteLine(purchace);
-            }
+            var purchaces = _manager.GetPurchaces().ToList();
+            Decorate();
+            purchaces.ForEach((item) => Console.WriteLine(item));
+            Decorate();
         }
 
         public void ShowCategories()
         {
-            var categories = _manager.GetCategories();
-            foreach(var category in categories)
-            {
-                Console.WriteLine(category);
-            }
+            var categories = _manager.GetCategories().ToList();
+            Decorate();
+            categories.ForEach((item) => Console.WriteLine(item));
+            Decorate();
         }
 
         public void ShowSummary()
@@ -130,14 +128,21 @@ namespace Wallet
             }
         }
 
-        public void ShowMonthlySummary(int month)
+        public void ShowMonthlySummary(int month=0)
         {
-            var purchaces = _manager.GetPurchaces();
-            var grouped = purchaces.GroupBy(c => c.Category);
+            Decorate();
+            Console.WriteLine(String.Format("{0,-40} {1,-10} {2,13}", "Kategoria", "% całości", "Suma"));
+            Decorate();
 
-            Console.WriteLine(new String('-', 54));
-            Console.WriteLine(String.Format("{0,-40} {1,13}", "Kategoria", "Suma"));
-            Console.WriteLine(new String('-', 54));
+            var purchaces = _manager.GetPurchaces();
+
+            var sum = purchaces
+                .Where(d => d.Date.Month == month)
+                .Select(p => p.Amount)
+                .Sum();
+            
+            var summary = new Dictionary<string, (decimal, decimal)>();
+            var grouped = purchaces.GroupBy(c => c.Category);
 
             foreach(var purchace in grouped)
             {
@@ -145,42 +150,54 @@ namespace Wallet
                     .Where(d => d.Date.Month == month)
                     .Select(p => p.Amount)
                     .Sum();
-                var name = purchace.Key;
-
-                Console.WriteLine($"{name,-40} {s,10} zł");
+                var name = purchace.Key.ToString();
+                var percent = (s / sum) * 100;
+                if(s != 0)
+                    summary[name] = (Math.Round(percent), s);
             }
 
-            var sum = purchaces
-                .Where(d => d.Date.Month == month)
-                .Select(p => p.Amount)
-                .Sum();
+            foreach(var s in summary.OrderByDescending(i => i.Value.Item2))
+            {
+                Console.WriteLine($"{s.Key,-40} {s.Value.Item1,-10} {s.Value.Item2,10} zł");
+            }
 
-            Console.WriteLine(String.Format("{0,40} {1,10} zł", "Razem:", sum));
-            Console.WriteLine(new String('-', 54));
+            Decorate();
+            Console.WriteLine(String.Format("{0,50} {1,11} zł", "Razem:", sum));
+            Decorate();
 
         }
 
         public void ShowTotalSummary()
         {
-            var purchaces = _manager.GetPurchaces();
-            var grouped = purchaces.GroupBy(c => c.Category);
+            Decorate();
+            Console.WriteLine(String.Format("{0,-40} {1,-10} {2,13}", "Kategoria", "% całości", "Suma"));
+            Decorate();
 
-            Console.WriteLine(new String('-', 54));
-            Console.WriteLine(String.Format("{0,-40} {1,13}", "Kategoria", "Suma"));
-            Console.WriteLine(new String('-', 54));
+            var purchaces = _manager.GetPurchaces();
+            var sum = purchaces.Select(p => p.Amount).Sum();
+            
+            var summary = new Dictionary<string, (decimal, decimal)>();
+            var grouped = purchaces.GroupBy(c => c.Category);
 
             foreach(var purchace in grouped)
             {
                 var s = purchace.Select(p => p.Amount).Sum();
-                var name = purchace.Key;
-
-                Console.WriteLine($"{name,-40} {s,10} zł");
+                var name = purchace.Key.ToString();
+                var percent = (s / sum) * 100;
+                if(s != 0)
+                    summary[name] = (Math.Round(percent), s);
             }
 
-            var sum = purchaces.Select(p => p.Amount).Sum();
+            foreach(var s in summary.OrderByDescending(i => i.Value.Item2))
+            {
+                Console.WriteLine($"{s.Key,-40} {s.Value.Item1,-10} {s.Value.Item2,10} zł");
+            }
 
-            Console.WriteLine(String.Format("{0,40} {1,10} zł", "Razem:", sum));
-            Console.WriteLine(new String('-', 54));
+            Decorate();
+            Console.WriteLine(String.Format("{0,50} {1,11} zł", "Razem:", sum));
+            Decorate();
         }
+
+        private void Decorate() => Console.WriteLine(new String('-', 65));
     }
 }
