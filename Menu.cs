@@ -84,6 +84,8 @@ namespace Wallet
         {
             var purchaces = _manager.GetPurchaces().ToList();
             Decorate();
+            Console.WriteLine(String.Format("{0,-15} {1,-20} {2,-10} {3,-80}", "Data", "Kategoria", "Cena", "Nazwa"));
+            Decorate();
             purchaces.ForEach((item) => Console.WriteLine(item));
             Decorate();
         }
